@@ -37,7 +37,7 @@ Each hypervisor has its own Vagrantfile in this repository. Below are the config
 
 - **KVM**:  
     - Ensure `libvirt` is installed and running.  
-    - Use the `Vagrantfile.kvm` file.  
+    - View the `vagrant-box-kvm.md` doc for make the box [vagrant-box-kvm](vagrant-box-kvm.md) 
 
 - **Hyper-V**:  
     - Use the `Vagrantfile.hyperv` file.  
