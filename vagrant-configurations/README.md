@@ -34,15 +34,15 @@ Each hypervisor has its own Vagrantfile in this repository. Below are the config
 
 - **VirtualBox**:  
     - Use the `Vagrantfile.virtualbox` file.
-    - View the `vagrant-box-vbox.md` doc for make the box [vagrant-box-vbox](vagrant-box-vbox.md) 
+    - View the `vagrant-box-vbox.md` doc for make the box [vagrant-box-vbox](box-vbox/vagrant-box-vbox.md) 
 
 - **KVM**:  
     - Ensure `libvirt` is installed and running.  
-    - View the `vagrant-box-kvm.md` doc for make the box [vagrant-box-kvm](vagrant-box-kvm.md) 
+    - View the `vagrant-box-kvm.md` doc for make the box [vagrant-box-kvm](box-kvm/vagrant-box-kvm.md) 
 
 - **Hyper-V**:  
     - Use the `Vagrantfile.hyperv` file.
-    - View the `vagrant-box-hyperv.md` doc for make the box [vagrant-box-hyperv](vagrant-box-hyperv.md) 
+    - View the `vagrant-box-hyperv.md` doc for make the box [vagrant-box-hyperv](box-hyperv/vagrant-box-hyperv.md) 
 
 ## Cloning the Repository  
 
