@@ -120,7 +120,7 @@ vagrant up rhel95local
 ### Ejemplo de prueba desde la consola web
 
 ```bash
-vagrant init consulanregistry/rhel95-vmware-cloud --box-version 0.0.1
+vagrant init consulanregistry/rhel95base --box-version 0.0.1
 Vagrant.configure("2") do |config|
     config.vm.box = "consulanregistry/rhel95base"
     config.vm.box_version = "0.0.1"
