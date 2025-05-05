@@ -30,7 +30,7 @@ Each hypervisor has its own Vagrantfile in this repository. Below are the config
 
 - **VMware Workstation**:  
     - Ensure the VMware plugin is installed.  
-    - View the `vagrant-box-vmware.md` doc for make the box [vagrant-box-vmware](vagrant-box-vmware.md) 
+    - View the `vagrant-box-vmware.md` doc for make the box [vagrant-box-vmware](box/vagrant-box-vmware.md) 
 
 - **VirtualBox**:  
     - Use the `Vagrantfile.virtualbox` file.
