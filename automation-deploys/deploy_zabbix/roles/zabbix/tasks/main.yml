@@ -1,0 +1,117 @@
+---
+- name: Desplegar Zabbix Server en RHEL 9.4
+  hosts: zabbix_servers
+  become: yes
+  vars:
+    zabbix_db_user: zabbix
+    zabbix_db_password: zabbix
+    zabbix_db_name: zabbix
+    zabbix_repo_url: "https://repo.zabbix.com/zabbix/7.4/release/rhel/9/noarch/zabbix-release-latest-7.4.el9.noarch.rpm"
+  pre_tasks:
+    - name: Instalar collection community.postgresql si no está
+      ansible.builtin.command: ansible-galaxy collection install community.postgresql
+      changed_when: false
+      check_mode: no
+      ignore_errors: yes
+
+  tasks:
+    - name: Excluir paquetes Zabbix en EPEL si existe
+      ansible.builtin.lineinfile:
+        path: /etc/yum.repos.d/epel.repo
+        regexp: '^excludepkgs='
+        line: 'excludepkgs=zabbix*'
+        insertafter: '^\[epel\]'
+      when: ansible_facts.packages['epel-release'] is defined
+      ignore_errors: yes
+
+    - name: Descargar RPM repo Zabbix 7.4
+      ansible.builtin.get_url:
+        url: "{{ zabbix_repo_url }}"
+        dest: /tmp/zabbix-release.rpm
+
+    - name: Instalar repo Zabbix sin validación GPG (workaround SHA1)
+      ansible.builtin.command:
+        cmd: rpm -Uvh --nosignature /tmp/zabbix-release.rpm
+      args:
+        creates: /etc/yum.repos.d/zabbix.repo
+
+    - name: Limpiar caché DNF
+      ansible.builtin.command: dnf clean all
+
+    - name: Instalar Zabbix server, frontend y dependencias
+      ansible.builtin.yum:
+        name:
+          - zabbix-server-pgsql
+          - zabbix-web-pgsql
+          - zabbix-nginx-conf
+          - zabbix-sql-scripts
+          - zabbix-selinux-policy
+          - zabbix-agent
+          - postgresql-server
+        state: present
+
+    - name: Inicializar PostgreSQL (si no inicializado)
+      ansible.builtin.command:
+        cmd: postgresql-setup --initdb
+      args:
+        creates: /var/lib/pgsql/data/pg_hba.conf
+
+    - name: Iniciar y habilitar PostgreSQL
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Crear usuario zabbix en PostgreSQL con contraseña
+      community.postgresql.postgresql_user:
+        name: "{{ zabbix_db_user }}"
+        password: "{{ zabbix_db_password }}"
+        login_user: postgres
+        login_unix_socket: /var/run/postgresql
+        state: present
+
+    - name: Crear base de datos zabbix owned by zabbix user
+      community.postgresql.postgresql_db:
+        name: "{{ zabbix_db_name }}"
+        owner: "{{ zabbix_db_user }}"
+        login_user: postgres
+        login_unix_socket: /var/run/postgresql
+        state: present
+
+    - name: Importar esquema inicial en la base Zabbix solo si no está importado
+      ansible.builtin.shell: |
+        zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | psql -U {{ zabbix_db_user }} -d {{ zabbix_db_name }}
+        touch /var/lib/pgsql/data/base/zabbix_schema_imported
+      args:
+        creates: /var/lib/pgsql/data/base/zabbix_schema_imported
+
+    - name: Configurar contraseña DB en Zabbix Server
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: '^#?DBPassword='
+        line: "DBPassword={{ zabbix_db_password }}"
+
+    - name: Descomentar listen y server_name en nginx para Zabbix
+      ansible.builtin.replace:
+        path: /etc/nginx/conf.d/zabbix.conf
+        regexp: '^#( *listen| *server_name)'
+        replace: '\1'
+      notify: Restart nginx
+
+    - name: Habilitar y arrancar servicios
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - zabbix-server
+        - zabbix-agent
+        - nginx
+        - php-fpm
+
+    - name: Permitir acceso Zabbix vía SELinux
+      ansible.builtin.command:
+        cmd: setsebool -P httpd_can_connect_zabbix 1
+
+
+

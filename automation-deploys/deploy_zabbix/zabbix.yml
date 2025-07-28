@@ -1,0 +1,6 @@
+- name: Deploy Zabbix Server on RHEL 9.4
+  hosts: zabbix
+  become: yes
+
+  roles:
+    - zabbix
