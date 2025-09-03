@@ -1,0 +1,12 @@
+---
+- name: Configuración base DevOps
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Instalar kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      args:
+        creates: /usr/local/bin/kubectl
