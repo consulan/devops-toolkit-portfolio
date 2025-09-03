@@ -1,0 +1,17 @@
+# This YAML file defines a DaemonSet that deploys a node-exporter container on each node in the Kubernetes cluster.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mi-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: monitor
+  template:
+    metadata:
+      labels:
+        app: monitor
+    spec:
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:latest

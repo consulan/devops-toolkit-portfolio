@@ -17,7 +17,7 @@ El Vagrant Box es una imagen de Vagrant alojada públicamente en HashiCorp Cloud
 ### Descripción  
 Se utilizó VMware Workstation 16 como hipervisor para crear una imagen base (Golden Image) en una máquina con 128GB de RAM. Dentro de esta, se habilitó Hyper-V en Windows 10 para levantar una VM con RHEL 9.5.  
 
-### Preparativos  
+### Preparativos en VM dentro del VMWare
 1. **Habilitar Hyper-V en Windows 10:**  
     - `Win + R` → "control panel" → "Programs" → "Turn Windows features on or off" → Seleccionar "Hyper-V" → "OK".  
 
@@ -119,3 +119,13 @@ Se utilizó VMware Workstation 16 como hipervisor para crear una imagen base (Go
 
     vagrant up  
     ```  
+4. Grafico de virtualizacion anidada
+    ```mermaid
+    graph TD
+        A[Host físico<br>VMWare Workstation 16]
+        B[VM Windows 10<br>(Hyper-V habilitado)]
+        C[VM RHEL 9.x]
+
+        A --> B
+        B --> C
+    ```

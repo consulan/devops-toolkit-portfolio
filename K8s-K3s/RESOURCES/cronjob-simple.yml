@@ -1,0 +1,16 @@
+# This YAML file defines a simple Kubernetes CronJob that runs a backup command every day at midnight.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mi-cronjob
+spec:
+  schedule: "0 0 * * *"  # todos los días a la medianoche
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: alpine
+            command: ["sh", "-c", "echo Haciendo backup a las $(date)"]
+          restartPolicy: OnFailure

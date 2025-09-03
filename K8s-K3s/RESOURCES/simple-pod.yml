@@ -1,0 +1,11 @@
+# This YAML file defines a simple Kubernetes Pod running an Nginx container.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.25
+      ports:
+        - containerPort: 80

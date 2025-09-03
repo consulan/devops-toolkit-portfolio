@@ -1,0 +1,14 @@
+# This YAML file defines a simple Kubernetes Job that runs a Perl script to calculate the value of pi to 1000 digits.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mi-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(1000)"]
+      restartPolicy: Never
+  backoffLimit: 4

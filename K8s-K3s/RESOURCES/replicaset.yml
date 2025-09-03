@@ -1,0 +1,18 @@
+# This YAML file defines a ReplicaSet that manages three replicas of an Nginx container in Kubernetes.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mi-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
