@@ -122,8 +122,8 @@ Se utilizó VMware Workstation 16 como hipervisor para crear una imagen base (Go
 4. Grafico de virtualizacion anidada
     ```mermaid
     graph TD
-        A[Host físico<br>VMWare Workstation 16]
-        B[VM Windows 10<br>(Hyper-V habilitado)]
+        A[Host físico-VMWare Workstation 16]
+        B[VM Windows 10-(Hyper-V habilitado)]
         C[VM RHEL 9.x]
 
         A --> B
