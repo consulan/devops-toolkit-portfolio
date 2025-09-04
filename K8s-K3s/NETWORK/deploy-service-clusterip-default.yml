@@ -1,0 +1,11 @@
+# This YAML file defines a ClusterIP Service (for default, type is not declare) for an Nginx application in Kubernetes.
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - port: 80        # Puerto del Service (interno al cluster)
+      targetPort: 80  # Puerto del contenedor (nginx)

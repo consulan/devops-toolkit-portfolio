@@ -1,0 +1,18 @@
+# Simple Pod using hostPath Volume
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-hostpath
+spec:
+  containers:
+    - name: app
+      image: busybox
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: datos
+          mountPath: /data
+  volumes:
+    - name: datos
+      hostPath:
+        path: /mnt/host-data
+        type: DirectoryOrCreate

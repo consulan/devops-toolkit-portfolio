@@ -1,0 +1,11 @@
+# Simple PersistentVolumeClaim requesting 500Mi storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-ejemplo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

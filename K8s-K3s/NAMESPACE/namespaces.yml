@@ -1,0 +1,15 @@
+# This file contains Kubernetes Namespace definitions for different environments.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qa
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod

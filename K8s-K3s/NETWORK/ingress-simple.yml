@@ -1,0 +1,19 @@
+# Simple Ingress Resource
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mi-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: miapp.local   # Dominio a resolver (agregar en /etc/hosts si es local)
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mi-servicio-clusterip
+                port:
+                  number: 80

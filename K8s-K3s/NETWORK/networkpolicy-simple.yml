@@ -1,0 +1,20 @@
+# Simple NetworkPolicy to allow HTTP traffic from 'frontend' pods to 'mi-app' pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: permitir-http-desde-frontend
+  namespace: mi-namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: mi-app
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 80
+  policyTypes:
+    - Ingress

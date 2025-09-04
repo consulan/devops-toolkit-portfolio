@@ -1,0 +1,13 @@
+# Simple PersistentVolume using hostPath
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-ejemplo
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data
+  persistentVolumeReclaimPolicy: Retain

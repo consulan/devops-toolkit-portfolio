@@ -1,55 +1,37 @@
-# Variables
-KUBECTL ?= kubectl
-DIR ?=
-FILE ?=
-NAME ?=
-PORT ?=
+# Makefile interactivo para K3s/K8s
+SHELL := /bin/bash
+.ONESHELL:
+.PHONY: init
 
-# HELP (se ejecuta con "make help")
-help:
-	@echo "Comandos disponibles:"
-	@echo "  make apply DIR=<dir>         -> Aplica todos los YAML de un directorio"
-	@echo "  make apply FILE=<file>       -> Aplica un archivo YAML específico"
-	@echo "  make delete DIR=<dir>        -> Borra todos los YAML de un directorio"
-	@echo "  make delete FILE=<file>      -> Borra un archivo YAML específico"
-	@echo "  make get                     -> Lista pods, services y deployments"
-	@echo "  make logs NAME=<pod>         -> Muestra logs de un Pod"
-	@echo "  make describe NAME=<pod>     -> Describe un Pod"
-	@echo "  make port-forward NAME=<pod> PORT=8080:80 -> Hace port-forward de un Pod"
-	@echo "  make context                 -> Muestra el contexto actual de kubectl"
-
-# Aplica recursos
-apply:
-ifeq ($(DIR),)
-	$(if $(FILE), $(KUBECTL) apply -f $(FILE), $(error Debes definir DIR=<dir> o FILE=<file>))
-else
-	$(KUBECTL) apply -f $(DIR)/
-endif
-
-# Borra recursos
-delete:
-ifeq ($(DIR),)
-	$(if $(FILE), $(KUBECTL) delete -f $(FILE), $(error Debes definir DIR=<dir> o FILE=<file>))
-else
-	$(KUBECTL) delete -f $(DIR)/
-endif
-
-# Lista recursos básicos
-get:
-	$(KUBECTL) get all
-
-# Logs de un Pod específico
-logs:
-	$(KUBECTL) logs -f $(NAME)
-
-# Describe un Pod específico
-describe:
-	$(KUBECTL) describe pod $(NAME)
-
-# Port-forward de un Pod específico
-port-forward:
-	$(KUBECTL) port-forward pod/$(NAME) $(PORT)
-
-# Contexto actual
-context:
-	$(KUBECTL) config current-context
+init:
+	@echo "=== Init de despliegue ==="
+	@read -p "Namespace (default=default): " NS; \
+	if [ -z "$$NS" ]; then NS=default; fi; \
+	if kubectl get ns "$$NS" >/dev/null 2>&1; then \
+		echo "Usando namespace '$$NS'."; \
+	else \
+		read -p "El namespace '$$NS' no existe. ¿Crearlo desde YAML? [y/N]: " CREATE; \
+		if [[ "$$CREATE" =~ ^[Yy]$$ ]]; then \
+			read -p "Ruta al YAML de Namespace: " NSFILE; \
+			if [ -z "$$NSFILE" ] || [ ! -f "$$NSFILE" ]; then echo "Archivo de namespace inválido."; exit 1; fi; \
+			if kubectl apply -f "$$NSFILE"; then \
+				echo "Namespace creado OK."; \
+			else \
+				echo "ERROR creando namespace."; exit 1; \
+			fi; \
+		else \
+			echo "Abortado: no existe el namespace y no se creó."; exit 1; \
+		fi; \
+	fi; \
+	read -p "¿Aplicar un YAML en el namespace '$$NS'? [y/N]: " APPLY; \
+	if [[ "$$APPLY" =~ ^[Yy]$$ ]]; then \
+		read -p "Ruta del YAML a aplicar: " FILE; \
+		if [ -z "$$FILE" ] || [ ! -f "$$FILE" ]; then echo "Archivo de despliegue inválido."; exit 1; fi; \
+		if kubectl apply -n "$$NS" -f "$$FILE"; then \
+			echo "Despliegue OK en '$$NS'."; \
+		else \
+			echo "ERROR aplicando el YAML en '$$NS'."; exit 1; \
+		fi; \
+	else \
+		echo "Fin: no se aplicó ningún YAML."; \
+	fi
